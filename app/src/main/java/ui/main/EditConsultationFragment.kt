@@ -25,11 +25,10 @@ class EditConsultationFragment : Fragment() {
     private lateinit var etDate: EditText
     private lateinit var etHour: EditText
     private lateinit var etReason: EditText
-    private lateinit var spinnerPatient: Spinner
+    private lateinit var etPatient: EditText
     private lateinit var btnSave: Button
 
     // Pour l’instant : patient mock (on branchera le vrai spinner après)
-    private var selectedPatientId: Int = 1
 
     // ==============================
     // LIFECYCLE
@@ -65,7 +64,7 @@ class EditConsultationFragment : Fragment() {
         etDate = view.findViewById(R.id.etDate)
         etHour = view.findViewById(R.id.etHour)
         etReason = view.findViewById(R.id.etReason)
-        spinnerPatient = view.findViewById(R.id.spinnerPatient)
+        etPatient = view.findViewById(R.id.etPatientId)
         btnSave = view.findViewById(R.id.btnSave)
 
         // ==============================
@@ -83,14 +82,14 @@ class EditConsultationFragment : Fragment() {
 
         if (isAssigned) {
             // consultation déjà attribuée → modifier date/heure
-            spinnerPatient.visibility = View.GONE
+            etPatient.visibility = View.GONE
             etReason.visibility = View.GONE
 
             etDate.visibility = View.VISIBLE
             etHour.visibility = View.VISIBLE
         } else {
             // consultation libre → attribuer patient/raison
-            spinnerPatient.visibility = View.VISIBLE
+            etPatient.visibility = View.VISIBLE
             etReason.visibility = View.VISIBLE
 
             etDate.visibility = View.GONE
@@ -118,16 +117,16 @@ class EditConsultationFragment : Fragment() {
                 // 🔹 consultation attribuée → modifier date / heure
                 Requete_UPDATE_CONSULTATION(
                     idConsultation = consultation.getId(),
-                    newDate = LocalDate.parse(etDate.text.toString()),
-                    newHour = etHour.text.toString()   // ✅ JAMAIS NULL
+                    nouvelleDate = LocalDate.parse(etDate.text.toString()),
+                    nouvelleHeure = etHour.text.toString()
                 )
             } else {
                 // 🔹 consultation libre → attribuer patient / raison
                 Requete_UPDATE_CONSULTATION(
                     idConsultation = consultation.getId(),
-                    patientId = selectedPatientId,
-                    reason = etReason.text.toString(),
-                    newHour = consultation.getHour()  // ✅ heure EXISTANTE
+                    idPatient = etPatient.text.toString().toIntOrNull(),
+                    nouvelleRaison = etReason.text.toString(),
+                    nouvelleHeure = consultation.getHour()  // ✅ heure EXISTANTE
                 )
             }
 

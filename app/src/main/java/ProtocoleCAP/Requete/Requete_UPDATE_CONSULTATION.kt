@@ -6,11 +6,12 @@ import java.io.Serializable
 import java.time.LocalDate
 
 class Requete_UPDATE_CONSULTATION(
-    val idConsultation: Int?,
-    val newDate: LocalDate? = null,
-    val newHour: String? = null,
-    val patientId: Int? = null,
-    val reason: String? = null
+    private val idConsultation: Int?,
+    private val nouvelleDate: LocalDate? = null,
+    private val nouvelleHeure: String? = null,
+
+    private val idPatient: Int? = null,
+    private val nouvelleRaison: String? = null
 
 ) : RequeteCAP(), Serializable {
 
@@ -18,10 +19,10 @@ class Requete_UPDATE_CONSULTATION(
         private const val serialVersionUID = 1L
     }
 
-    override fun toString(): String {
-        return "Requete_UPDATE_CONSULTATION(" +
-                "idConsultation=$idConsultation, " +
-                "newDate=$newDate, newHour=$newHour, " +
-                "patientId=$patientId, reason=$reason)"
-    }
+
+    fun getIdConsultation(): Int? = idConsultation
+    fun getNouvelleDate(): LocalDate? = nouvelleDate
+    fun getNouvelleHeure(): String? = nouvelleHeure
+    fun getIdPatient(): Int? = idPatient
+    fun getNouvelleRaison(): String? = nouvelleRaison
 }

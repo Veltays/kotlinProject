@@ -16,11 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Heure (hh:mm)" />
-    <Spinner
-        android:id="@+id/spinnerPatient"
+    <EditText
+        android:id="@+id/etPatientId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Patient"
+        android:hint="Id du patient"
+        android:inputType="number"
         android:layout_marginTop="16dp"/>
 
     <EditText

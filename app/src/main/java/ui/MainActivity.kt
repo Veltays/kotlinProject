@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
 
         initDrawer()
         initDrawerMenu()
-        // ❌ initFragment SUPPRIMÉ (cours)
     }
 
     // =====================================================

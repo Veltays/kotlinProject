@@ -13,7 +13,7 @@ class Requete_SEARCH_CONSULTATIONS(
         private const val serialVersionUID = 1L
     }
 
-    // 🔥 Integer Java → Int? Kotlin
+
     var idPatient: Int? = idPatient
         private set
 

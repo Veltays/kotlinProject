@@ -2,30 +2,43 @@ package ui.main
 
 import ProtocoleCAP.Requete.Requete_ADD_CONSULTATION
 import ProtocoleCAP.Requete.Requete_ADD_PATIENT
+import ProtocoleCAP.Requete.Requete_SEARCH_CONSULTATIONS
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import be.kotlinprojet.R
 import kotlinx.coroutines.launch
 import network.ConnectServer
 import ui.MainActivity
+import ui.main.adapter.ConsultationAdapter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class MainFragment : Fragment() {
+
+    private lateinit var recyclerView: RecyclerView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         (activity as? MainActivity)?.setupToolbar(toolbar)
+
+        recyclerView = view.findViewById(R.id.rvConsultations)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        showConsultations()
     }
 
     override fun onResume() {
@@ -44,6 +57,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.fragment_main, container, false)
+
     }
 
     fun showAddConsultationDialog() {
@@ -105,8 +119,18 @@ class MainFragment : Fragment() {
 
                     if (success) {
                         Log.d("ADD_CONSULTATION", "Consultation ajoutée")
+                        AlertDialog.Builder(requireContext())
+                            .setTitle("succès")
+                            .setMessage("consultation(s) ajoutée(s) avec succès!")
+                            .setPositiveButton("OK", null)
+                            .show()
                     } else {
                         Log.e("ADD_CONSULTATION", "Erreur ajout consultation")
+                        AlertDialog.Builder(requireContext())
+                            .setTitle("erreur")
+                            .setMessage("erreur lors de l'ajout")
+                            .setPositiveButton("OK", null)
+                            .show()
                     }
                 }
             }
@@ -126,7 +150,7 @@ class MainFragment : Fragment() {
         val etPrenom = view.findViewById<EditText>(R.id.etPrenom)
 
         AlertDialog.Builder(requireContext())
-            .setTitle("➕ Ajouter un patient")
+            .setTitle("Ajouter un patient")
             .setView(view)
             .setPositiveButton("OK") { _, _ ->
 
@@ -150,13 +174,38 @@ class MainFragment : Fragment() {
 
                     if (idPatient != -1) {
                         Log.d("ADD_PATIENT", "Patient ajouté id=$idPatient")
+                        AlertDialog.Builder(requireContext())
+                            .setTitle("success")
+                            .setMessage("patient ajouté avec succès")
+                            .setPositiveButton("ok!",null)
+                            .show()
                     } else {
                         Log.e("ADD_PATIENT", "Erreur ajout patient")
+                        AlertDialog.Builder(requireContext())
+                            .setTitle("erreur")
+                            .setMessage("erreur lors de l'ajout du patient")
+                            .setPositiveButton("ok",null)
+                            .show()
                     }
                 }
             }
             .setNegativeButton("Annuler", null)
             .show()
+    }
+
+
+    fun showConsultations() {
+        Log.e("DEBUG", "🔥 showConsultations APPELÉE")
+        lifecycleScope.launch {
+            val requete = Requete_SEARCH_CONSULTATIONS(null, null)
+            val consultations = ConnectServer.searchConsultation(requete)
+
+            if (consultations.isEmpty()) {
+                Toast.makeText(requireContext(), "Aucune consultation", Toast.LENGTH_LONG).show()
+            } else {
+                recyclerView.adapter = ConsultationAdapter(consultations)
+            }
+        }
     }
 
 

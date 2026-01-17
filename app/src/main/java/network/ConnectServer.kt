@@ -7,10 +7,11 @@ import protocol.Reponse
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.net.Socket
+import model.entity.Consultation
 
 object ConnectServer {
 
-    private const val HOST = "192.168.0.37"
+    private const val HOST = "192.168.1.10"
     private const val PORT = 6769
 
     private var idConnexionWithServer: Int? = null
@@ -64,7 +65,7 @@ object ConnectServer {
         val response = sendRequest(requete)
 
         return if (response is ProtocoleCAP.Reponse.Reponse_LOGOUT && response.isValide()) {
-            idConnexionWithServer = null // 🔥 important
+            idConnexionWithServer = null
             true
         } else {
             false
@@ -98,6 +99,41 @@ object ConnectServer {
         val response = sendRequest(requete)
         return response is ProtocoleCAP.Reponse.Reponse_ADD_CONSULTATION && response.isValide()
     }
+
+
+    ////////////
+    //// search consultation
+    ////////////////////////////////
+
+    suspend fun searchConsultation( requete : Requete) : List<Consultation> {
+        val response = sendRequest(requete)
+
+        if(response is ProtocoleCAP.Reponse.Reponse_SEARCH_CONSULTATIONS && response.isValide()) {
+            return response.getConsultationsList()
+        }
+        else{
+            return emptyList()
+        }
+
+    }
+
+    ///////////
+    // DELETE
+    //////////
+
+    suspend fun deleteConsultation (requete : Requete): Boolean {
+        val response = sendRequest(requete)
+        return response is ProtocoleCAP.Reponse.Reponse_DELETE_CONSULTATION && response.isValide()
+    }
+
+    /////// ////////
+    /// UPDATE
+    ///////////
+
+//    suspend fun updateConsultation (requete : Requete) : Boolean {
+//        val response = sendRequest(requete)
+//        //return response is ProtocoleCAP.Reponse.Reponse_UPDATE_CONSULTATION && response.isValide()
+//    }
 
 
 

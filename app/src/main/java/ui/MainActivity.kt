@@ -145,8 +145,6 @@ class MainActivity : AppCompatActivity() {
             currentFragment.showAddPatientDialog()
         }
     }
-
-
 }
 
 

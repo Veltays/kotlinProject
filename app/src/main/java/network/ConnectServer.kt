@@ -18,6 +18,8 @@ object ConnectServer {
 
     private var idConnexionWithServer: Int? = null
 
+    fun isLogged(): Boolean = idConnexionWithServer != null
+
     // =====================================================
     // MÉTHODE GÉNÉRIQUE D’ENVOI
     // =====================================================
@@ -25,20 +27,31 @@ object ConnectServer {
     private suspend fun sendRequest(requete: Requete): Reponse? {
         return withContext(Dispatchers.IO) {
             try {
+                Log.e("NET", "1️⃣ socket connect")
+
                 Socket(HOST, PORT).use { socket ->
+
+                    Log.e("NET", "2️⃣ create OOS")
                     val oos = ObjectOutputStream(socket.getOutputStream())
+                    oos.flush() // 🔥 ABSOLUMENT CRUCIAL
+
+                    Log.e("NET", "3️⃣ create OIS")
                     val ois = ObjectInputStream(socket.getInputStream())
 
-                    // Injection de l'id de connexion
                     requete.setIdConnexion(idConnexionWithServer)
+                    Log.e("NET", "4️⃣ write requete")
 
                     oos.writeObject(requete)
                     oos.flush()
 
-                    ois.readObject() as Reponse
+                    Log.e("NET", "5️⃣ read response")
+                    val obj = ois.readObject()
+
+                    Log.e("NET", "6️⃣ response = ${obj::class.java.name}")
+                    obj as Reponse
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("NET", "💥 EXCEPTION", e)
                 null
             }
         }
@@ -110,11 +123,14 @@ object ConnectServer {
     suspend fun searchConsultation(requete: Requete): List<Consultation> {
         val response = sendRequest(requete)
 
-        if (response is Reponse_SEARCH_CONSULTATIONS && response.isValide()) {
+        if (response is Reponse_SEARCH_CONSULTATIONS) {
+            Log.e("DEBUG", "RESPONSE OK")
+            Log.e("DEBUG", "LIST = ${response.consultationsList}")
             Log.e("DEBUG", "SIZE = ${response.consultationsList.size}")
             return response.consultationsList
         }
 
+        Log.e("DEBUG", "RESPONSE INVALID OR NULL")
         return emptyList()
     }
 

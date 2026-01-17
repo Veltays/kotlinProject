@@ -40,17 +40,22 @@ class MainFragment : Fragment() {
         recyclerView = view.findViewById(R.id.rvConsultations)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        showConsultations()
+
     }
 
     override fun onResume() {
         super.onResume()
         (activity as? MainActivity)?.enableDrawer()
+        if (ConnectServer.isLogged()) {
+            Log.e("DEBUG", "🟢 onResume → chargé après login")
+            showConsultations()
+        }
     }
 
     override fun onPause() {
         super.onPause()
         (activity as? MainActivity)?.disableDrawer()
+
     }
 
     override fun onCreateView(
@@ -197,18 +202,39 @@ class MainFragment : Fragment() {
 
 
     fun showConsultations() {
-        Log.e("DEBUG", "🔥 showConsultations APPELÉE")
-        lifecycleScope.launch {
-            val requete = Requete_SEARCH_CONSULTATIONS(null, null)
-            val consultations = ConnectServer.searchConsultation(requete)
+        Log.e("UI", "🔥 showConsultations() APPELÉE fragment=${this.hashCode()}")
 
-            if (consultations.isEmpty()) {
-                Toast.makeText(requireContext(), "Aucune consultation", Toast.LENGTH_LONG).show()
-            } else {
-                recyclerView.adapter = ConsultationAdapter(consultations)
+        lifecycleScope.launch {
+            try {
+                Log.e("UI", "➡️ requête SEARCH envoyée")
+
+                val consultations = ConnectServer.searchConsultation(
+                    Requete_SEARCH_CONSULTATIONS(null, null)
+                )
+
+                Log.e("UI", "⬅️ réponse reçue size=${consultations.size}")
+
+                // Sécurité : fragment encore attaché ?
+                if (!isAdded || view == null) {
+                    Log.e("UI", "⛔ fragment non attaché, abandon")
+                    return@launch
+                }
+
+                // Toujours attacher l'adapter (même si liste vide)
+                recyclerView.apply {
+                    adapter = ConsultationAdapter(consultations)
+                    layoutManager = LinearLayoutManager(requireContext())
+                    setHasFixedSize(true)
+                }
+
+                Log.e("UI", "✅ adapter attaché")
+
+            } catch (e: Exception) {
+                Log.e("UI", "💥 erreur dans showConsultations()", e)
             }
         }
     }
+
 
 
     fun handlelogout() {

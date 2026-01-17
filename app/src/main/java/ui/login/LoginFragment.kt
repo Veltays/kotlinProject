@@ -57,14 +57,10 @@ class LoginFragment : Fragment() {
                 val success = ConnectServer.login(requeteLogin)
 
                 if (success) {
-                    Log.d("LoginFragment", "Connexion réussie")
-
                     findNavController().navigate(
                         R.id.action_loginFragment_to_mainFragment
                     )
 
-                } else {
-                    Log.d("LoginFragment", "Connexion refusée")
                 }
             }
         }

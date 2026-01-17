@@ -1,5 +1,6 @@
 package ui.main
 
+import ProtocoleCAP.Reponse.Reponse_SEARCH_CONSULTATIONS
 import ProtocoleCAP.Requete.Requete_ADD_CONSULTATION
 import ProtocoleCAP.Requete.Requete_ADD_PATIENT
 import ProtocoleCAP.Requete.Requete_SEARCH_CONSULTATIONS
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import be.kotlinprojet.R
 import kotlinx.coroutines.launch
 import network.ConnectServer
+import protocol.Reponse
 import ui.MainActivity
 import ui.main.adapter.ConsultationAdapter
 import java.time.LocalDate

@@ -5,7 +5,9 @@ import protocol.Reponse
 import java.io.Serializable
 import java.util.ArrayList
 
-class Reponse_SEARCH_CONSULTATIONS : Reponse, Serializable {
+class Reponse_SEARCH_CONSULTATIONS (
+    var consultationsList: ArrayList<Consultation> = ArrayList()
+) : Reponse, Serializable {
 
     private val valide: Boolean = true
 
@@ -15,14 +17,5 @@ class Reponse_SEARCH_CONSULTATIONS : Reponse, Serializable {
 
     }
 
-    private val consultationsList: ArrayList<Consultation> = ArrayList()
-
-    fun addConsultation(c: Consultation) {
-        consultationsList.add(c)
-    }
-
-    fun getConsultationsList(): ArrayList<Consultation> {
-        return consultationsList
-    }
     fun isValide(): Boolean = valide
 }

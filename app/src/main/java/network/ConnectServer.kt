@@ -1,5 +1,7 @@
 package network
 
+import ProtocoleCAP.Reponse.Reponse_SEARCH_CONSULTATIONS
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import protocol.Requete
@@ -105,16 +107,15 @@ object ConnectServer {
     //// search consultation
     ////////////////////////////////
 
-    suspend fun searchConsultation( requete : Requete) : List<Consultation> {
+    suspend fun searchConsultation(requete: Requete): List<Consultation> {
         val response = sendRequest(requete)
 
-        if(response is ProtocoleCAP.Reponse.Reponse_SEARCH_CONSULTATIONS && response.isValide()) {
-            return response.getConsultationsList()
-        }
-        else{
-            return emptyList()
+        if (response is Reponse_SEARCH_CONSULTATIONS && response.isValide()) {
+            Log.e("DEBUG", "SIZE = ${response.consultationsList.size}")
+            return response.consultationsList
         }
 
+        return emptyList()
     }
 
     ///////////

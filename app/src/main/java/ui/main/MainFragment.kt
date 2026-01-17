@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import be.kotlinprojet.R
@@ -30,6 +31,7 @@ class MainFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var consultationAdapter: ConsultationAdapter
     private lateinit var deleteButton: Button
+    private lateinit var updateButton : Button
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,6 +50,12 @@ class MainFragment : Fragment() {
         deleteButton.setOnClickListener {
             Log.e("UI", "🗑️ DELETE cliqué")
             onDeleteClicked()
+        }
+
+        updateButton = view.findViewById(R.id.button)
+        updateButton.setOnClickListener {
+            Log.e("UI","UPDATE bouton cliqué")
+            onUpdateClicked()
         }
 
 
@@ -275,6 +283,29 @@ class MainFragment : Fragment() {
             .show()
     }
 
+
+    fun onUpdateClicked() {
+
+        val selected = consultationAdapter.getSelectedConsultation()
+
+        if (selected == null) {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Erreur")
+                .setMessage("Veuillez sélectionner une consultation")
+                .setPositiveButton("OK", null)
+                .show()
+            return
+        }
+
+        val bundle = Bundle().apply {
+            putSerializable("consultation", selected)
+        }
+
+        findNavController().navigate(
+            R.id.action_mainFragment_to_editConsultationFragment,
+            bundle
+        )
+    }
     fun handlelogout() {
         lifecycleScope.launch {
             val success = ConnectServer.logout()

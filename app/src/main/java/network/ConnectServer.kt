@@ -147,10 +147,10 @@ object ConnectServer {
     /// UPDATE
     ///////////
 
-//    suspend fun updateConsultation (requete : Requete) : Boolean {
-//        val response = sendRequest(requete)
-//        //return response is ProtocoleCAP.Reponse.Reponse_UPDATE_CONSULTATION && response.isValide()
-//    }
+    suspend fun updateConsultation (requete : Requete) : Boolean {
+       val response = sendRequest(requete)
+       return response is ProtocoleCAP.Reponse.Reponse_UPDATE_CONSULTATION && response.isValide()
+    }
 
 
 

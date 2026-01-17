@@ -24,4 +24,12 @@
         android:label="Main"
         tools:layout="@layout/fragment_main" />
 
+    <fragment
+        android:id="@+id/editConsultationFragment"
+        android:name="ui.main.EditConsultationFragment"
+        android:label="Edit Consultation" />
+
+    <action
+        android:id="@+id/action_mainFragment_to_editConsultationFragment"
+        app:destination="@id/editConsultationFragment" />
 </navigation>

@@ -1,5 +1,6 @@
 package ui.main.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +13,20 @@ class ConsultationAdapter(
     private val consultations: List<Consultation>
 ) : RecyclerView.Adapter<ConsultationAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val text: TextView = view.findViewById(R.id.tvConsultation)
+    private var selectedPosition = RecyclerView.NO_POSITION
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvConsultation: TextView =
+            itemView.findViewById(R.id.tvConsultation)
+
+        init {
+            itemView.setOnClickListener {
+                val oldPos = selectedPosition
+                selectedPosition = adapterPosition
+                notifyItemChanged(oldPos)
+                notifyItemChanged(selectedPosition)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,11 +35,24 @@ class ConsultationAdapter(
         return ViewHolder(view)
     }
 
-    override fun getItemCount() = consultations.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val c = consultations[position]
-        holder.text.text =
-            "ID:${c.getId()} | Patient:${c.getPatient_id() ?: "Libre"} | ${c.getDate()} ${c.getHour()}"
+
+        holder.tvConsultation.text =
+            "📅 ${c.getDate()}  ⏰ ${c.getHour()}  👤 ${c.getPatient_id()}"
+
+        holder.itemView.setBackgroundColor(
+            if (position == selectedPosition)
+                Color.parseColor("#553366FF")
+            else
+                Color.TRANSPARENT
+        )
     }
+
+    override fun getItemCount() = consultations.size
+
+    fun getSelectedConsultation(): Consultation? =
+        if (selectedPosition != RecyclerView.NO_POSITION)
+            consultations[selectedPosition]
+        else null
 }

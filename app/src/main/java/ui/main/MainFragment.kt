@@ -1,17 +1,16 @@
 package ui.main
 
-import ProtocoleCAP.Reponse.Reponse_SEARCH_CONSULTATIONS
 import ProtocoleCAP.Requete.Requete_ADD_CONSULTATION
 import ProtocoleCAP.Requete.Requete_ADD_PATIENT
+import ProtocoleCAP.Requete.Requete_DELETE_CONSULTATION
 import ProtocoleCAP.Requete.Requete_SEARCH_CONSULTATIONS
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.Toolbar
@@ -21,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import be.kotlinprojet.R
 import kotlinx.coroutines.launch
 import network.ConnectServer
-import protocol.Reponse
 import ui.MainActivity
 import ui.main.adapter.ConsultationAdapter
 import java.time.LocalDate
@@ -30,6 +28,9 @@ import java.time.format.DateTimeFormatter
 class MainFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var consultationAdapter: ConsultationAdapter
+    private lateinit var deleteButton: Button
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,6 +40,15 @@ class MainFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.rvConsultations)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        consultationAdapter = ConsultationAdapter(emptyList())
+        recyclerView.adapter = consultationAdapter
+
+        deleteButton = view.findViewById(R.id.button3)
+        deleteButton.setOnClickListener {
+            Log.e("UI", "🗑️ DELETE cliqué")
+            onDeleteClicked()
+        }
 
 
     }
@@ -220,9 +230,10 @@ class MainFragment : Fragment() {
                     return@launch
                 }
 
-                // Toujours attacher l'adapter (même si liste vide)
+                // ✅ FIX : Initialise consultationAdapter ET l'assigne au recyclerView
+                consultationAdapter = ConsultationAdapter(consultations)
                 recyclerView.apply {
-                    adapter = ConsultationAdapter(consultations)
+                    adapter = consultationAdapter
                     layoutManager = LinearLayoutManager(requireContext())
                     setHasFixedSize(true)
                 }
@@ -236,6 +247,33 @@ class MainFragment : Fragment() {
     }
 
 
+
+    fun onDeleteClicked() {
+
+        val selected = consultationAdapter.getSelectedConsultation()
+
+        if (selected == null) {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Erreur")
+                .setMessage("Veuillez sélectionner une consultation")
+                .setPositiveButton("OK", null)
+                .show()
+            return
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Supprimer")
+            .setMessage("Supprimer la consultation du ${selected.getDate()} à ${selected.getHour()} ?")
+            .setPositiveButton("Oui") { _, _ ->
+                lifecycleScope.launch {
+                    val requete = Requete_DELETE_CONSULTATION(selected.getId())
+                    ConnectServer.deleteConsultation(requete)
+                    showConsultations() // refresh
+                }
+            }
+            .setNegativeButton("Annuler", null)
+            .show()
+    }
 
     fun handlelogout() {
         lifecycleScope.launch {

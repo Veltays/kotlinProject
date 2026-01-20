@@ -31,14 +31,11 @@ class Doctor : Entity, Serializable {
         setUser_id(user_id)
     }
 
-    // GETTERS
     fun getId(): Int? = id
     fun getSpecialty_id(): Int? = specialty_id
     fun getLastname(): String? = lastname
     fun getFirstname(): String? = firstname
     fun getUser_id(): Int? = user_id
-
-    // SETTERS
     fun setId(id: Int?) {
         this.id = id
     }

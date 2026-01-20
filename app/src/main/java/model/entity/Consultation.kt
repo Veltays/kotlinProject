@@ -37,7 +37,6 @@ class Consultation : Entity, Serializable {
 
     constructor()
 
-    // 🔹 GETTERS
     fun getId(): Int? = id
 
     fun getDoctor_id(): Int? = doctor_id
@@ -52,7 +51,6 @@ class Consultation : Entity, Serializable {
 
     fun getDuration(): String? = duration
 
-    // 🔹 SETTERS
     fun setId(id: Int?) {
         this.id = id
     }
@@ -81,7 +79,6 @@ class Consultation : Entity, Serializable {
         this.duration = duration
     }
 
-    // 🔹 TO STRING
     override fun toString(): String {
         return "Consultation{" +
                 "id=$id, " +

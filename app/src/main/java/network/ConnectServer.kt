@@ -13,7 +13,7 @@ import model.entity.Consultation
 
 object ConnectServer {
 
-    private const val HOST = "192.168.1.10"
+    private const val HOST = "192.168.246.149"
     private const val PORT = 6769
 
     private var idConnexionWithServer: Int? = null
@@ -27,39 +27,39 @@ object ConnectServer {
     private suspend fun sendRequest(requete: Requete): Reponse? {
         return withContext(Dispatchers.IO) {
             try {
-                Log.e("NET", "1️⃣ socket connect")
+                Log.e("NET", "socket connect")
 
                 Socket(HOST, PORT).use { socket ->
 
-                    Log.e("NET", "2️⃣ create OOS")
+                    Log.e("NET", "create OOS")
                     val oos = ObjectOutputStream(socket.getOutputStream())
-                    oos.flush() // 🔥 ABSOLUMENT CRUCIAL
+                    oos.flush()
 
-                    Log.e("NET", "3️⃣ create OIS")
+                    Log.e("NET", "create OIS")
                     val ois = ObjectInputStream(socket.getInputStream())
 
                     requete.setIdConnexion(idConnexionWithServer)
-                    Log.e("NET", "4️⃣ write requete")
+                    Log.e("NET", "write requete")
 
                     oos.writeObject(requete)
                     oos.flush()
 
-                    Log.e("NET", "5️⃣ read response")
+                    Log.e("NET", "read response")
                     val obj = ois.readObject()
 
-                    Log.e("NET", "6️⃣ response = ${obj::class.java.name}")
+                    Log.e("NET", "response = ${obj::class.java.name}")
                     obj as Reponse
                 }
             } catch (e: Exception) {
-                Log.e("NET", "💥 EXCEPTION", e)
+                Log.e("NET", "EXCEPTION", e)
                 null
             }
         }
     }
 
-    // =====================================================
-    // LOGIN
-    // =====================================================
+    /******************************************************************
+            LOGIN
+     *****************************************************************/
 
     suspend fun login(requete: Requete): Boolean {
         val response = sendRequest(requete)
@@ -71,9 +71,9 @@ object ConnectServer {
         return false
     }
 
-    // =====================================================
-    // LOGOUT
-    // =====================================================
+    /******************************************************************
+            LOGOUT
+     *****************************************************************/
 
     suspend fun logout(): Boolean {
         val requete = ProtocoleCAP.Requete.Requete_LOGOUT()
@@ -88,9 +88,9 @@ object ConnectServer {
     }
 
 
-    // =====================================================
-    // ADD PATIENT
-    // =====================================================
+    /******************************************************************
+            ADD PATIENT
+     *****************************************************************/
 
 
     suspend fun addPatient(requete: Requete): Int {
@@ -104,9 +104,9 @@ object ConnectServer {
     }
 
 
-    // =====================================================
-    // ADD CONSULTATION
-    // =====================================================
+    /******************************************************************
+            ADD CONSULTATION
+     *****************************************************************/
 
 
 
@@ -116,9 +116,9 @@ object ConnectServer {
     }
 
 
-    ////////////
-    //// search consultation
-    ////////////////////////////////
+    /******************************************************************
+        SEARCH CONSULTATION
+     *****************************************************************/
 
     suspend fun searchConsultation(requete: Requete): List<Consultation> {
         val response = sendRequest(requete)
@@ -129,29 +129,24 @@ object ConnectServer {
             Log.e("DEBUG", "SIZE = ${response.consultationsList.size}")
             return response.consultationsList
         }
-
-        Log.e("DEBUG", "RESPONSE INVALID OR NULL")
         return emptyList()
     }
 
-    ///////////
-    // DELETE
-    //////////
+    /******************************************************************
+      DELETE
+     *****************************************************************/
 
     suspend fun deleteConsultation (requete : Requete): Boolean {
         val response = sendRequest(requete)
         return response is ProtocoleCAP.Reponse.Reponse_DELETE_CONSULTATION && response.isValide()
     }
 
-    /////// ////////
-    /// UPDATE
-    ///////////
+    /******************************************************************
+            UPDATE
+     *****************************************************************/
 
     suspend fun updateConsultation (requete : Requete) : Boolean {
        val response = sendRequest(requete)
        return response is ProtocoleCAP.Reponse.Reponse_UPDATE_CONSULTATION && response.isValide()
     }
-
-
-
 }

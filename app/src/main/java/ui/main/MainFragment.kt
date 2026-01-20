@@ -48,13 +48,11 @@ class MainFragment : Fragment() {
 
         deleteButton = view.findViewById(R.id.button3)
         deleteButton.setOnClickListener {
-            Log.e("UI", "🗑️ DELETE cliqué")
             onDeleteClicked()
         }
 
         updateButton = view.findViewById(R.id.button)
         updateButton.setOnClickListener {
-            Log.e("UI","UPDATE bouton cliqué")
             onUpdateClicked()
         }
 
@@ -65,7 +63,6 @@ class MainFragment : Fragment() {
         super.onResume()
         (activity as? MainActivity)?.enableDrawer()
         if (ConnectServer.isLogged()) {
-            Log.e("DEBUG", "🟢 onResume → chargé après login")
             showConsultations()
         }
     }
@@ -92,7 +89,6 @@ class MainFragment : Fragment() {
             null
         )
 
-        // 🔹 Récupération des champs
         val etDate = view.findViewById<EditText>(R.id.etDate)
         val etHeure = view.findViewById<EditText>(R.id.etHeure)
         val etDuree = view.findViewById<EditText>(R.id.etDuree)
@@ -103,13 +99,11 @@ class MainFragment : Fragment() {
             .setView(view)
             .setPositiveButton("OK") { _, _ ->
 
-                // 🔹 Lecture des valeurs saisies
                 val date = etDate.text.toString().trim()
                 val heure = etHeure.text.toString().trim()
                 val duree = etDuree.text.toString().trim()
                 val nombre = etNombre.text.toString().trim()
 
-                // 🔹 Affichage (test / debug / cours)
                 Log.d("MainFragment", "Date=$date Heure=$heure Durée=$duree Nombre=$nombre")
 
 
@@ -220,25 +214,18 @@ class MainFragment : Fragment() {
 
 
     fun showConsultations() {
-        Log.e("UI", "🔥 showConsultations() APPELÉE fragment=${this.hashCode()}")
 
         lifecycleScope.launch {
             try {
-                Log.e("UI", "➡️ requête SEARCH envoyée")
-
                 val consultations = ConnectServer.searchConsultation(
                     Requete_SEARCH_CONSULTATIONS(null, null)
                 )
 
-                Log.e("UI", "⬅️ réponse reçue size=${consultations.size}")
-
-                // Sécurité : fragment encore attaché ?
+                // fragment encore attaché ?
                 if (!isAdded || view == null) {
-                    Log.e("UI", "⛔ fragment non attaché, abandon")
                     return@launch
                 }
 
-                // ✅ FIX : Initialise consultationAdapter ET l'assigne au recyclerView
                 consultationAdapter = ConsultationAdapter(consultations)
                 recyclerView.apply {
                     adapter = consultationAdapter
@@ -246,14 +233,11 @@ class MainFragment : Fragment() {
                     setHasFixedSize(true)
                 }
 
-                Log.e("UI", "✅ adapter attaché")
-
             } catch (e: Exception) {
-                Log.e("UI", "💥 erreur dans showConsultations()", e)
+                Log.e("UI", "EXCEPTION dans showConsultations()", e)
             }
         }
     }
-
 
 
     fun onDeleteClicked() {
@@ -276,13 +260,12 @@ class MainFragment : Fragment() {
                 lifecycleScope.launch {
                     val requete = Requete_DELETE_CONSULTATION(selected.getId())
                     ConnectServer.deleteConsultation(requete)
-                    showConsultations() // refresh
+                    showConsultations()
                 }
             }
             .setNegativeButton("Annuler", null)
             .show()
     }
-
 
     fun onUpdateClicked() {
 
@@ -315,7 +298,4 @@ class MainFragment : Fragment() {
             }
         }
     }
-
-
-
 }

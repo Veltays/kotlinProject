@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/blue_background">
 
-    <!-- TOOLBAR (ON GARDE) -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
@@ -16,7 +15,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- TITRE -->
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -29,7 +27,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- LISTE SCROLLABLE -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvConsultations"
         android:layout_width="0dp"
@@ -40,7 +37,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- BOUTONS EN BAS -->
     <LinearLayout
         android:id="@+id/layoutButtons"
         android:layout_width="0dp"
